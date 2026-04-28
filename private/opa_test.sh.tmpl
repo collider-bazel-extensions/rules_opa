@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Generated wrapper for opa_test.
+set -euo pipefail
+
+if [[ -z "${RUNFILES_DIR:-}" ]]; then
+  if [[ -d "${0}.runfiles" ]]; then RUNFILES_DIR="${0}.runfiles"
+  elif [[ -d "$(dirname "$0").runfiles" ]]; then RUNFILES_DIR="$(dirname "$0").runfiles"
+  fi
+  export RUNFILES_DIR
+fi
+
+resolve() {
+  # Inputs come in as workspace-rooted short_paths; OPA needs filesystem
+  # paths. The default Bazel runfiles tree puts them under _main/<short>.
+  local p="$1"
+  if [[ -e "${RUNFILES_DIR}/_main/${p}" ]]; then
+    printf '%s\n' "${RUNFILES_DIR}/_main/${p}"
+  elif [[ -e "${RUNFILES_DIR}/${p}" ]]; then
+    printf '%s\n' "${RUNFILES_DIR}/${p}"
+  else
+    echo "opa_test: input not in runfiles: ${p}" >&2
+    exit 1
+  fi
+}
+
+OPA="$(resolve '{OPA_BIN}')"
+
+inputs=()
+for p in {INPUTS}; do
+  inputs+=("$(resolve "$p")")
+done
+
+# `--explain=fails` shows the trace for failing tests; `-v` lists each
+# test_* rule with PASS/FAIL. Both are noisy on success but invaluable on
+# failure, and the cost is negligible.
+exec "$OPA" test --explain=fails -v {EXTRA} "${inputs[@]}"

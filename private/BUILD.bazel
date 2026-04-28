@@ -1,0 +1,15 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "opa_test.sh.tmpl",
+    "opa_fmt_check.sh.tmpl",
+    "versions.bzl",
+])
+
+bzl_library(name = "providers", srcs = ["providers.bzl"])
+bzl_library(name = "versions", srcs = ["versions.bzl"])
+bzl_library(name = "repositories", srcs = ["repositories.bzl"], deps = [":versions"])
+bzl_library(name = "opa_test", srcs = ["opa_test.bzl"])
+bzl_library(name = "opa_fmt_check", srcs = ["opa_fmt_check.bzl"])

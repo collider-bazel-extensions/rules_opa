@@ -1,0 +1,60 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load(":toolchain.bzl", "opa_toolchain")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["toolchain.bzl"])
+
+toolchain_type(name = "opa")
+
+# Per-platform toolchains. Each `opa_<plat>` repo (created by the module
+# extension) contains the OPA binary for one platform; the toolchain
+# selects the right repo based on the resolved exec platform.
+
+opa_toolchain(
+    name    = "opa_linux_amd64_impl",
+    version = "1.15.2",
+    opa_bin = "@opa_linux_amd64//:bin",
+)
+
+toolchain(
+    name                    = "opa_linux_amd64",
+    toolchain_type          = ":opa",
+    exec_compatible_with    = ["@platforms//os:linux", "@platforms//cpu:x86_64"],
+    target_compatible_with  = ["@platforms//os:linux", "@platforms//cpu:x86_64"],
+    toolchain               = ":opa_linux_amd64_impl",
+)
+
+opa_toolchain(
+    name    = "opa_darwin_amd64_impl",
+    version = "1.15.2",
+    opa_bin = "@opa_darwin_amd64//:bin",
+)
+
+toolchain(
+    name                    = "opa_darwin_amd64",
+    toolchain_type          = ":opa",
+    exec_compatible_with    = ["@platforms//os:osx", "@platforms//cpu:x86_64"],
+    target_compatible_with  = ["@platforms//os:osx", "@platforms//cpu:x86_64"],
+    toolchain               = ":opa_darwin_amd64_impl",
+)
+
+opa_toolchain(
+    name    = "opa_darwin_arm64_impl",
+    version = "1.15.2",
+    opa_bin = "@opa_darwin_arm64//:bin",
+)
+
+toolchain(
+    name                    = "opa_darwin_arm64",
+    toolchain_type          = ":opa",
+    exec_compatible_with    = ["@platforms//os:osx", "@platforms//cpu:arm64"],
+    target_compatible_with  = ["@platforms//os:osx", "@platforms//cpu:arm64"],
+    toolchain               = ":opa_darwin_arm64_impl",
+)
+
+bzl_library(
+    name = "toolchain",
+    srcs = ["toolchain.bzl"],
+    deps = ["//private:providers"],
+)

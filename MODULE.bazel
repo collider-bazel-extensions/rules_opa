@@ -1,0 +1,28 @@
+"""rules_opa — hermetic Open Policy Agent (OPA) CLI for Bazel: opa_test, opa_fmt_check."""
+
+module(
+    name = "rules_opa",
+    version = "0.1.0",
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "platforms", version = "1.0.0")
+
+opa = use_extension("//:extensions.bzl", "opa")
+
+# Pinned OPA release. The extension fetches the per-platform binary at the
+# sha256 pinned in private/versions.bzl and exposes it as a hermetic
+# toolchain. Add more versions by tagging them in versions.bzl and calling
+# opa.version() again.
+opa.version(version = "1.15.2")
+
+use_repo(opa,
+    "opa_linux_amd64",
+    "opa_darwin_arm64",
+    "opa_darwin_amd64",
+)
+
+register_toolchains("@rules_opa//toolchain:all")
+
+# ---- dev-only: rules_shell for the in-tree analysis harness ------------------
+bazel_dep(name = "rules_shell", version = "0.8.0", dev_dependency = True)

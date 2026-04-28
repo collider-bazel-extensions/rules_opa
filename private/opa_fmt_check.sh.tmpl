@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Generated wrapper for opa_fmt_check.
+set -euo pipefail
+
+if [[ -z "${RUNFILES_DIR:-}" ]]; then
+  if [[ -d "${0}.runfiles" ]]; then RUNFILES_DIR="${0}.runfiles"
+  elif [[ -d "$(dirname "$0").runfiles" ]]; then RUNFILES_DIR="$(dirname "$0").runfiles"
+  fi
+  export RUNFILES_DIR
+fi
+
+resolve() {
+  local p="$1"
+  if [[ -e "${RUNFILES_DIR}/_main/${p}" ]]; then
+    printf '%s\n' "${RUNFILES_DIR}/_main/${p}"
+  elif [[ -e "${RUNFILES_DIR}/${p}" ]]; then
+    printf '%s\n' "${RUNFILES_DIR}/${p}"
+  else
+    echo "opa_fmt_check: input not in runfiles: ${p}" >&2
+    exit 1
+  fi
+}
+
+OPA="$(resolve '{OPA_BIN}')"
+
+inputs=()
+for p in {INPUTS}; do
+  inputs+=("$(resolve "$p")")
+done
+
+# `opa fmt -d` prints a unified diff for any file that would change. Empty
+# stdout = clean. Run it once, capture stdout, fail if non-empty.
+diff_out=$("$OPA" fmt -d "${inputs[@]}")
+if [[ -n "$diff_out" ]]; then
+  echo "opa_fmt_check: the following files would be reformatted by 'opa fmt':" >&2
+  echo "$diff_out" >&2
+  exit 1
+fi
+echo "opa_fmt_check: OK — all ${#inputs[@]} file(s) already formatted"

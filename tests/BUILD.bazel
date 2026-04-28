@@ -1,0 +1,35 @@
+"""Tests for rules_opa.
+
+- Analysis tests verify the rules instantiate cleanly without invoking opa.
+- `:example_test` and `:example_fmt_check` exercise the rules end-to-end
+  against `tests/example/` (a tiny `access.rego` + `access_test.rego`).
+  Both are real Bazel tests that download the OPA binary on first run.
+"""
+
+load("@rules_opa//:defs.bzl", "opa_fmt_check", "opa_test")
+load(":analysis_tests.bzl", "opa_fmt_check_test_suite", "opa_test_test_suite")
+
+# ---- analysis ---------------------------------------------------------------
+
+opa_test_test_suite(name = "opa_test_analysis")
+
+opa_fmt_check_test_suite(name = "opa_fmt_check_analysis")
+
+# ---- end-to-end --------------------------------------------------------------
+# These run the OPA binary and assert it exits zero.
+
+opa_test(
+    name = "example_test",
+    srcs = [
+        "example/access.rego",
+        "example/access_test.rego",
+    ],
+)
+
+opa_fmt_check(
+    name = "example_fmt_check",
+    srcs = [
+        "example/access.rego",
+        "example/access_test.rego",
+    ],
+)
