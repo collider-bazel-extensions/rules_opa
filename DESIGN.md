@@ -27,6 +27,7 @@ spirit to `rules_python`'s `py_test` than to those.
 | 12 | Naming | snake_case rules, `MixedCaseInfo` providers (`OpaInfo`), `UPPER_SNAKE` constants. | All siblings |
 | 13 | Update workflow | `tools/update_versions.sh <version>` curls per-platform `.sha256` companions and rewrites `private/versions.bzl`. | rules_certmanager pattern |
 | 14 | Default test tags | None — `opa_test` and `opa_fmt_check` are sandboxed and need no special tagging. | OPA-specific |
+| 15 | Version selection (v0.1.1) | One OPA version per build: the root module's `opa.version()`, else rules_opa's own (its MODULE.bazel), else `DEFAULT_VERSION` (`private/versions.bzl`); each `opa_<plat>` repo is created once. Through v0.1.0 only the root's tags were honoured, but rules_opa's own MODULE.bazel imports the repos and registers the toolchain for every consumer, so a root without `opa.version()` failed (`does not generate repository "opa_linux_amd64"`), and a root repeating the tag crashed the extension. Two different versions in one module, or an unsupported one, fail naming `opa.version`. CI's `consumer` job (`.github/consumer/check.sh`) checks this from the commit's `git archive`. The `version` on each `opa_toolchain` in `toolchain/BUILD.bazel` is still literal; it must follow the selected version once a second one is pinned. | Same fix as rules_atlas#12 |
 
 ## Notes
 

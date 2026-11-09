@@ -35,19 +35,17 @@ Linux validated in CI; macOS pending. See [Contributing](#contributing).
 ## Installation
 
 ```python
-bazel_dep(name = "rules_opa", version = "0.1.0")
+bazel_dep(name = "rules_opa", version = "0.1.1")
+```
 
+That's all: rules_opa's own `MODULE.bazel` fetches OPA and registers the toolchain. To choose the OPA version, set it in your root module:
+
+```python
 opa = use_extension("@rules_opa//:extensions.bzl", "opa")
 opa.version(version = "1.15.2")
-
-use_repo(opa,
-    "opa_linux_amd64",
-    "opa_darwin_amd64",
-    "opa_darwin_arm64",
-)
-
-register_toolchains("@rules_opa//toolchain:all")
 ```
+
+The extension fetches one version for the whole build: the root module's `opa.version()` if it sets one, otherwise rules_opa's own (the default, `1.15.2`). Other modules' tags are ignored. Two different versions in the root, or a version not pinned in `private/versions.bzl`, fail with a message naming `opa.version`. Before v0.1.1 the root had to set `opa.version()` or resolution failed with `does not generate repository "opa_linux_amd64"`; the `use_repo(...)` / `register_toolchains(...)` lines earlier READMEs asked for are harmless but no longer needed.
 
 `rules_opa` is **Bzlmod-only** in v0.1. Until it lands in BCR, consume
 via `archive_override` or a git pin pointing at a tag.
