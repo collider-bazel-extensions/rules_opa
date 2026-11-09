@@ -21,6 +21,9 @@ Asset naming: OPA publishes per-platform binaries (no tarball wrapper) at
 The repository rule downloads them as plain executables.
 """
 
+# Used when no module sets opa.version(...).
+DEFAULT_VERSION = "1.15.2"
+
 OPA_VERSIONS = {
     "1.15.2": {
         "linux_amd64": {
