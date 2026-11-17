@@ -35,7 +35,7 @@ Linux validated in CI; macOS pending. See [Contributing](#contributing).
 ## Installation
 
 ```python
-bazel_dep(name = "rules_opa", version = "0.1.1")
+bazel_dep(name = "rules_opa", version = "0.1.2")
 ```
 
 That's all: rules_opa's own `MODULE.bazel` fetches OPA and registers the toolchain. To choose the OPA version, set it in your root module:
@@ -189,3 +189,7 @@ run the example tests on Darwin yet. A pasted log from a green
 Want Bazel rules for another tool or service?
 [Request a rules package](https://github.com/collider-bazel-extensions/.github/issues/new?template=request-a-rules-package.yml).
 The [organization page](https://github.com/collider-bazel-extensions) lists every package.
+
+## License
+
+[Apache License 2.0](LICENSE) (SPDX: `Apache-2.0`).
